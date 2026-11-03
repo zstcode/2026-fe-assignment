@@ -1,135 +1,60 @@
-# Meridian Banking — Frontend Take-Home
+# Meridian Banking — Zheng Shaotong
 
-Build a small banking app for one customer: a **dashboard** that shows her
-accounts and recent transactions, and a **three-step transfer** that sends money
-to a payee.
-
-You get a working React + TypeScript starter with a mock API already wired in,
-plus design tokens and a wireframe. You don't need a backend, and you don't need
-to invent data.
-
-|  |  |
-| --- | --- |
-| **Time** | Submit within **2 weeks** of receiving this. Most people need about **8–12 hours**; you don't need to use the full two weeks. |
-| **AI tools** | Allowed. In the follow-up call you explain your code and change it live, **without AI help**. See [How we assess](#4-how-we-assess). |
-| **Stack** | React 19, TypeScript, Vite, TanStack Query, React Hook Form, Zod, MSW, Vitest (all installed). Node 22. |
-
----
-
-## 1. Get started
-
-1. Open **https://github.com/Harmonice-Mundi/2026-fe-assignment/generate**
-   (or press **Use this template** → **Create a new repository**). Choose your
-   own account as the owner, keep it **Public**, and click **Create
-   repository**.
-2. Clone your copy and run:
-
-   ```bash
-   npm install
-   npm run dev        # http://localhost:5173
-   ```
-
-   You should see **"Mock API: connected"**. That screen is a placeholder;
-   replace it with your app.
-
-3. Read the docs below in order before writing code.
-
-## 2. What to read
-
-| Read | What it gives you |
-| --- | --- |
-| 1. [`brief/candidate-brief.md`](brief/candidate-brief.md) | **The spec.** What to build, what's required vs optional, exact copy. |
-| 2. [`wireframes/wireframe.md`](wireframes/wireframe.md) | Layout of each screen (low fidelity — no visual design). |
-| 3. [`brief/api-contract.md`](brief/api-contract.md) | Endpoints, types, errors, and test hooks. |
-
-Look these up when you need them:
-
-- [`DEPLOYMENT.md`](DEPLOYMENT.md): hosting settings and fixes for common mock-API
-  problems.
-- [`brief/design-tokens.css`](brief/design-tokens.css): colours, spacing and type
-  (already imported).
-- [`mock-api/README.md`](mock-api/README.md): the optional Node mock server.
-
-## 3. What's already in the starter
-
-| Path | What it is |
-| --- | --- |
-| `src/api/client.ts`, `src/api/types.ts` | Typed `apiFetch` helper and the API types. Build your queries on these. |
-| `src/lib/format.ts` | `formatMoney` and `formatShortDate`. Use them so amounts and dates match the brief. |
-| `src/mocks/`, `mock-api/` | The mock API. It runs in the browser, in tests, and in your deployed site. **Don't edit it.** |
-| `src/test/setup.ts` | Test setup. The mock data resets before every test. |
-| `src/App.tsx` | Placeholder screen. Replace it. |
-
-How you structure folders, components and features is **up to you** — that's
-part of what we look at.
-
-```bash
-npm run dev        # start the app
-npm test           # run tests once (npm run test:watch to keep watching)
-npm run lint       # ESLint
-npm run typecheck  # TypeScript
-npm run check      # lint + typecheck + tests
-npm run build      # production build into dist/
-```
-
-Run `npm run check` and `npm run build` before you submit; both should pass.
-
-## 4. How we assess
-
-1. **We open your deployed app** and run through the flows in the brief.
-2. **We read your code and README.** We look at how you structured the
-   project, the decisions you made, and whether the tests check real behaviour.
-3. **We have a follow-up call with you (about 45 minutes).** You share your
-   screen and:
-   - walk us through the structure and two or three decisions you made;
-   - trace one flow through the code (for example, what happens from
-     `Confirm transfer` until the balance updates);
-   - make **one or two small changes live**, without AI assistance. They are
-     the size of "add a validation rule" or "show one more field". Your
-     normal editor, docs and search are fine.
-
-**On AI:** use whatever tools you like while building. We are not checking
-whether code was AI-generated. We are checking that **you understand all of
-it** and made deliberate choices. If you can't explain a piece of code, it
-counts against you, whoever wrote it. Your README must say what you used AI
-for (see below).
-
-A smaller app you understand well scores better than a bigger one you can't
-explain.
-
-## 5. Submit
-
-1. **Deploy** to Netlify, Vercel or Cloudflare Pages (settings in
-   [`DEPLOYMENT.md`](DEPLOYMENT.md)). The deployed site must work with no local
-   server.
-2. **Replace this README** with your own, using the outline below.
-3. **Reply to the invitation email** with your repo URL and your deployed URL.
-
-### Your README
-
-```md
-# Meridian Banking — <Your Name>
-
-- Deployed: <url>
+- Deployed: [Vercel](https://meridian-banking-seven.vercel.app/)
 - Run locally: `npm install && npm run dev`
 
 ## Project structure
-Folders and what each is responsible for.
+
+- .github/workflows: GitHub Actions CI and deployment
+- src/api: API requests and types
+- src/components: UI components, including Dashboard and TransferDialog
+- src/hooks: Search debounce hook
+- src/lib: Debug settings and formatting
+- src/test: Test setup
+- src/utils: Form validation
 
 ## Decisions and trade-offs
-Server state vs UI state, forms and validation, theming, anything you
-chose deliberately, and what you'd change.
+
+- Server state and UI state: TanStack Query manages API data. React local state manages search input, account selection, and transfer steps. Totals and remaining limits are calculated from API data to avoid duplicate state.
+- Transaction search: Search uses the API parameters q and accountId. This includes transactions beyond the first eight rows. A 250 ms debounce reduces requests. Query keys include both filters. This approach requires loading and error states during search.
+- Data after a transfer: After a successful transfer, the app refreshes dashboard data before it shows the success screen. This avoids manual cache updates but adds a delay. If the refresh fails, the success screen hides “Make another transfer” because balances may be outdated.
+- Forms and validation: React Hook Form manages field state. Zod defines each validation rule once. Validation runs on blur and Continue. Amount checks use the selected account balance and remaining daily limit. Bank options and validation share one constant. Editing clears displayed errors, but this can also hide errors in unchanged fields.
+- Components and loading layouts: Dashboard sections and transfer steps use separate components. The transfer dialog keeps shared form state and submission logic. Loading placeholders reuse the dashboard structure to reduce layout differences. This adds loading properties to presentation components.
+- Native interaction: The app uses native `<dialog>`, radio inputs, and buttons for keyboard interaction. The dialog also locks background scrolling and restores focus when closed.
+- Account selection: The design does not specify whether account cards are clickable. The API supports filtering transactions by accountId. I made the cards clickable so users can view transactions for one account. Clicking the selected card again clears the account filter.
 
 ## Loading, empty and error states
-How you handled them, and how to see each one in the deployed app.
+
+Open **Debug**, change the API settings, then click **Apply**.
+
+- **Loading:** The dashboard, transactions, and payees show skeletons. Dashboard controls are disabled during initial loading. Set an API delay to `5000` ms to see this state.
+- **Empty:** Lists show an empty message. Transaction searches with no matches also offer **Clear search**. Set the accounts, transactions, or payees API to `empty` to see the state.
+- **Errors:** Failed data requests show an error and a retry button. Set a GET API to `error` to see this state. To test a transfer failure, enter `#fail` in the note and confirm. The form keeps your input so you can edit and retry.
 
 ## Tests
-What they cover and why you picked those cases.
+
+Tests use Vitest, React Testing Library, and MSW. They check user actions and visible results, including the three required cases.
+
+- **Happy flow:** The dashboard shows account data. A successful transfer updates balances, transactions, and the daily limit.
+- **API failures:** Failed requests show errors. A failed transfer does not show success or change balances.
+- **Validation:** An amount over the balance shows an error, focuses the field, and sends no request.
+- **Retry:** The dashboard loads after Retry. A failed transfer keeps its details and can succeed on retry.
+- **Theme changes:** All four theme and segment combinations work. Preferences are saved.
+- **Loading skeletons:** Skeletons appear during loading. Dashboard controls remain disabled until data arrives.
+
+I chose these cases to check financial accuracy, recovery from failures, and the main UI states.
 
 ## AI use
-Which tools, and what for. Name two or three places where you changed,
-rejected or fixed what the AI produced, and why.
+
+I used ChatGPT (Codex) with GPT-6 Astra and GPT-6.1 Sol to build the basic components and their CSS styles. I also used AI to build test cases.
+
+I reviewed the AI output and requested these changes:
+
+- **Component structure:** The AI initially kept dashboard sections and transfer steps in large components. I extracted them into into separate components. This makes the code easier to read and change without duplicating state.
+- **Bank validation:** The AI added length limits to a field with fixed options. I changed to use `z.enum()` and share the list with the dropdown. This made the rule simpler and kept validation consistent with the options.
+- **Transfer dialog:** Escape could still close the dialog during a transfer. I found the issue when testing in browsers and added a correction because it could leave dashboard showing outdated data to user and scrolling locked.
 
 ## Not done / known issues
-What you left out or would do with more time.
-```
+
+- The app does not track system theme changes while it is open.
+- The transfer success screen waits for the dashboard refresh.
