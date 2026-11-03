@@ -172,10 +172,7 @@ export default function DebugDrawer() {
                   )}
                 </fieldset>
               ))}
-              <p className="muted">
-                Blank delay uses the API default (~500 ms). Maximum: 5000 ms. Health is listed for completeness; the
-                dashboard does not call it.
-              </p>
+              <p className="muted">Blank delay uses the API default (~500 ms). Maximum: 5000 ms.</p>
             </div>
             <footer className="debug-footer">
               <p className="muted" role="status">
@@ -197,12 +194,7 @@ export default function DebugDrawer() {
                 <button type="submit" className="button secondary" disabled={applying}>
                   Apply settings
                 </button>
-                <button
-                  type="button"
-                  className="button primary"
-                  disabled={applying}
-                  onClick={() => apply(draft, true)}
-                >
+                <button type="button" className="button primary" disabled={applying} onClick={() => apply(draft, true)}>
                   Apply &amp; refresh
                 </button>
               </div>
