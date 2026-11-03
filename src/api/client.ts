@@ -1,4 +1,5 @@
 import type { ApiErrorBody } from './types'
+import { withDebugParams } from '../lib/debug-settings'
 
 /**
  * Small typed fetch wrapper. Build your query functions on top of this.
@@ -28,7 +29,8 @@ export async function apiFetch<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const url = `${BASE_URL}${path.replace(/^\//, '')}`
+  const requestPath = withDebugParams(path, init?.method)
+  const url = `${BASE_URL}${requestPath.replace(/^\//, '')}`
   const response = await fetch(url, init)
   const body = (await response.json().catch(() => null)) as
     | T
